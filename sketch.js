@@ -49,6 +49,7 @@ let touch = false
 if ("ontouchstart" in document.documentElement) {
   touch = true;
 }
+// touch = true
 
 function preload() {
   videoMain = createVideo(['https://res.cloudinary.com/the-hub/video/upload/v1606759311/hopes-and-aspirations/Inclusive_Futures_Tree_holding_shot_FADE_AUDIO_oedczu.mp4']);
@@ -207,14 +208,14 @@ function cursorChange() {
     // strokeWeight(10)
     // let circleDiameter = width / 8
     // circle(mouseX, mouseY, circleDiameter)
-    if (currentVideo === homeVid) {
+    if (currentVideo === homeVid && !touch) {
       showName(names[currentHover], mouseX, mouseY)
     }
   }
 }
 
 function touchButtons() {
-  if (touch && !clickToStart) {
+  if (touch && !clickToStart && currentVideo === homeVid) {
     showName(names[0], vidWidth * button1X + fontSize * 0.1 + modX, vidHeight * button1Y + modY + fontSize * 0.2, 0.5)
     showName(names[1], vidWidth * button2X + modX, vidHeight * button2Y + modY + fontSize * 0.2, 0.5)
     showName(names[2], vidWidth * button3X + modX, vidHeight * button3Y + modY + fontSize * 0.25, 0.5)
