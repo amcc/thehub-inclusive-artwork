@@ -2,7 +2,7 @@
 let ratio = 16 / 9;
 
 // button relative sizes
-let buttonSize = 0.13;
+let buttonSize = 0.12;
 let backButtonX = 0;
 let backButtonY = 0;
 let button1X = 0.43;
@@ -13,6 +13,8 @@ let button3X = 0.43;
 let button3Y = 0.70;
 let button4X = 0.63;
 let button4Y = 0.70;
+let button5X = 0.55;
+let button5Y = 0.11;
 let buttonsOn = []
 
 let clickToStart = true;
@@ -31,10 +33,13 @@ let vidHeight
 
 let colour = "white"
 // arrays for audio/video
+let names
 let audio;
 let videos;
 // last video is the home screen
-let currentVideo = 4;
+let homeVid = 5
+let currentVideo = homeVid;
+let currentHover = null
 let vidFade = 0;
 let vidFading = false;
 
@@ -50,10 +55,12 @@ function preload() {
   rajah = createAudio('https://res.cloudinary.com/the-hub/video/upload/v1606240744/hopes-and-aspirations/Rajah_name_audio_trimmed_rcz9cc.m4a');
   robyn = createAudio('https://res.cloudinary.com/the-hub/video/upload/v1606240744/hopes-and-aspirations/Robyn_name_audio_trimmed_noxfqf.m4a');
   thomas = createAudio('https://res.cloudinary.com/the-hub/video/upload/v1606240744/hopes-and-aspirations/Thomas_name_audio_trimmed_igcesv.m4a');
+  aysen = createAudio('https://res.cloudinary.com/the-hub/video/upload/v1606915082/hopes-and-aspirations/Aysen_name_audio_s9lrel.m4a')
   videoCastro = createVideo(['https://res.cloudinary.com/the-hub/video/upload/v1606239878/hopes-and-aspirations/Castro_subs_gehkxc.mp4']);
   videoRajah = createVideo(['https://res.cloudinary.com/the-hub/video/upload/v1606239876/hopes-and-aspirations/Rajah_subs_a55dzf.mp4']);
   videoRobyn = createVideo(['https://res.cloudinary.com/the-hub/video/upload/v1606239874/hopes-and-aspirations/Robyn_subs_a17igr.mp4']);
   videoThomas = createVideo(['https://res.cloudinary.com/the-hub/video/upload/v1606239877/hopes-and-aspirations/Thomas_subs_z5njgt.mp4']);
+  videoAysen = createVideo(['https://res.cloudinary.com/the-hub/video/upload/v1606239826/hopes-and-aspirations/Aysen_Al_VO_lgyxzs.mp4'])
   // videoMain.hide();
   // videoCastro.hide();
 }
@@ -72,16 +79,20 @@ function setup() {
   robyn.elt.setAttribute("playsinline", "");
   thomas.elt.setAttribute("playsinline", "");
   // playMain();
-  videos = [videoCastro, videoRajah, videoRobyn, videoThomas, videoMain]
-  audio = [castro, rajah, robyn, thomas]
+  videos = [videoRajah, videoCastro, videoAysen, videoThomas, videoRobyn, videoMain]
+  audio = [rajah,castro,  aysen, thomas, robyn]
+  names = ["Rajah","Castro",  "Aysen", "Thomas", "Robyn"]
   background(0);
   rectMode(CENTER);
+  textFont('Amatic SC')
+  textSize(50);
+  textStyle(BOLD);
 }
 
 function draw() {
   // background(0)
-  cursorChange()
   clear();
+  cursorChange()
   fill(colour)
 
   // calculate x and y offset for elements
@@ -100,7 +111,7 @@ function draw() {
   if (clickToStart) {
     cursor(HAND)
     noStroke()
-    textSize(40);
+    // textSize(40);
     textAlign(CENTER);
     fill(0)
     text("click to start", width / 2, height / 2)
@@ -130,6 +141,7 @@ function draw() {
     square(vidWidth * button2X + modX, vidHeight * button2Y + modY, vidWidth * buttonSize);
     square(vidWidth * button3X + modX, vidHeight * button3Y + modY, vidWidth * buttonSize);
     square(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize);
+    square(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize);
   } else if (!clickToStart) {
     noStroke()
     rect(vidWidth * backButtonX + modX, vidHeight * backButtonY + modY, width, height);
@@ -140,6 +152,7 @@ function draw() {
   isMouseInside(vidWidth * button2X + modX, vidHeight * button2Y + modY, vidWidth * buttonSize, 1)
   isMouseInside(vidWidth * button3X + modX, vidHeight * button3Y + modY, vidWidth * buttonSize, 2)
   isMouseInside(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize, 3)
+  isMouseInside(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize, 4)
 
   //   background(220);
   // image(video, 10, 10); // draw the video frame to canvas
@@ -149,27 +162,29 @@ function draw() {
 
 function mousePressed() {
   // set the video to loop and start playing
-  if (clickToStart) {
-    playMain()
-    clickToStart = false;
-  }
+
   // hit detection on click/tap
   if (enableButtons) {
     isMouseInside(vidWidth * button1X + modX, vidHeight * button1Y + modY, vidWidth * buttonSize, 0, true)
     isMouseInside(vidWidth * button2X + modX, vidHeight * button2Y + modY, vidWidth * buttonSize, 1, true)
     isMouseInside(vidWidth * button3X + modX, vidHeight * button3Y + modY, vidWidth * buttonSize, 2, true)
     isMouseInside(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize, 3, true)
+    isMouseInside(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize, 4, true)
   } else {
     backButton(vidWidth * backButtonX + modX, vidHeight * backButtonY + modY, width, height)
   }
-
+  if (clickToStart) {
+    playMain()
+    clickToStart = false;
+  }
 }
 
 // hit detection for audio and video clips
 function isMouseInside(x, y, size, clip, click = false) {
-  if (enableButtons) {
+  if (enableButtons && !clickToStart) {
     if (mouseX > x-size/2 && mouseX < x + size/2 && mouseY > y-size/2 && mouseY < y + size/2) {
       buttonsOn[clip] = true
+      currentHover = clip;
       if (touch && click && !buttonHovers[clip]) {
         playAudio(clip)
       }
@@ -201,6 +216,14 @@ function cursorChange() {
     cursor(ARROW)
   } else {
     cursor(HAND)
+    noFill()
+    stroke(255)
+    strokeWeight(10)
+    let circleDiameter = width/8
+    // circle(mouseX, mouseY, circleDiameter)
+    fill(255)
+    noStroke()
+    text(names[currentHover], mouseX, mouseY -10)
   }
 }
 
@@ -220,15 +243,15 @@ function playMain(oldVideo) {
   vidFade = 0;
   vidFading = true;
   enableButtons = true;
-  currentVideo = 4;
+  currentVideo = homeVid;
   videos.map(clip => {
     clip.stop()
     clip.addClass("out")
     clip.removeClass("in")
   })
-  videos[4].removeClass("out")
-  videos[4].addClass("in")
-  videos[4].loop()
+  videos[homeVid].removeClass("out")
+  videos[homeVid].addClass("in")
+  videos[homeVid].loop()
 
 }
 
