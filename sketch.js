@@ -80,8 +80,8 @@ function setup() {
   thomas.elt.setAttribute("playsinline", "");
   // playMain();
   videos = [videoRajah, videoCastro, videoAysen, videoThomas, videoRobyn, videoMain]
-  audio = [rajah,castro,  aysen, thomas, robyn]
-  names = ["Rajah","Castro",  "Aysen", "Thomas", "Robyn"]
+  audio = [rajah, castro, aysen, thomas, robyn]
+  names = ["Rajah", "Castro", "Aysen", "Thomas", "Robyn"]
   background(0);
   rectMode(CENTER);
   textFont('Amatic SC')
@@ -182,7 +182,7 @@ function mousePressed() {
 // hit detection for audio and video clips
 function isMouseInside(x, y, size, clip, click = false) {
   if (enableButtons && !clickToStart) {
-    if (mouseX > x-size/2 && mouseX < x + size/2 && mouseY > y-size/2 && mouseY < y + size/2) {
+    if (mouseX > x - size / 2 && mouseX < x + size / 2 && mouseY > y - size / 2 && mouseY < y + size / 2) {
       buttonsOn[clip] = true
       currentHover = clip;
       if (touch && click && !buttonHovers[clip]) {
@@ -219,11 +219,11 @@ function cursorChange() {
     noFill()
     stroke(255)
     strokeWeight(10)
-    let circleDiameter = width/8
+    let circleDiameter = width / 8
     // circle(mouseX, mouseY, circleDiameter)
     fill(255)
     noStroke()
-    text(names[currentHover], mouseX, mouseY -10)
+    text(names[currentHover], mouseX, mouseY - 10)
   }
 }
 
