@@ -42,6 +42,7 @@ let currentVideo = homeVid;
 let currentHover = null
 let vidFade = 0;
 let vidFading = false;
+let fontSize;
 
 // variable for mobile/touch detection
 let touch = false
@@ -83,10 +84,12 @@ function setup() {
   audio = [rajah, castro, aysen, thomas, robyn]
   names = ["Rajah", "Castro", "Aysen", "Thomas", "Robyn"]
   background(0);
+  fontSize = width / 10
   rectMode(CENTER);
   textFont('Amatic SC')
-  textSize(50);
+  textSize(fontSize);
   textStyle(BOLD);
+  smooth();
 }
 
 function draw() {
@@ -113,23 +116,9 @@ function draw() {
     noStroke()
     // textSize(40);
     textAlign(CENTER);
-    fill(0)
+    fill(255)
     text("click to start", width / 2, height / 2)
   }
-
-
-  //   // add the video
-  //   if(vidFading){
-  //     if(vidFade < 256) {
-  //       vidFade +=3;
-  //     } else {
-  //       vidFade = 0;
-  //       vidFading = false;
-  //     }
-
-  //   }
-  //   tint(255, vidFading ? vidFade : 255);
-  //   image(videos[currentVideo], modX, modY, vidWidth, vidHeight);
 
   // squares for button positions
   noFill()
@@ -216,14 +205,22 @@ function cursorChange() {
     cursor(ARROW)
   } else {
     cursor(HAND)
-    noFill()
-    stroke(255)
-    strokeWeight(10)
-    let circleDiameter = width / 8
+    // noFill()
+    // stroke(255)
+    // strokeWeight(10)
+    // let circleDiameter = width / 8
     // circle(mouseX, mouseY, circleDiameter)
-    fill(255)
-    noStroke()
-    text(names[currentHover], mouseX, mouseY - 10)
+    if (currentVideo === homeVid) {
+      fill(0)
+      noStroke()
+      textSize(fontSize)
+      text(names[currentHover], mouseX + 2, mouseY - 8)
+      fill(255)
+      noStroke()
+      textSize(fontSize)
+      text(names[currentHover], mouseX, mouseY - 10)
+    }
+
   }
 }
 
