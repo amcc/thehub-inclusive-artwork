@@ -8,13 +8,13 @@ let backButtonY = 0;
 let button1X = 0.43;
 let button1Y = 0.30;
 let button2X = 0.66;
-let button2Y = 0.33;
+let button2Y = 0.35;
 let button3X = 0.43;
 let button3Y = 0.70;
 let button4X = 0.63;
 let button4Y = 0.70;
 let button5X = 0.55;
-let button5Y = 0.11;
+let button5Y = 0.13;
 let buttonsOn = []
 
 let clickToStart = true;
@@ -143,10 +143,7 @@ function draw() {
   isMouseInside(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize, 3)
   isMouseInside(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize, 4)
 
-  //   background(220);
-  // image(video, 10, 10); // draw the video frame to canvas
-  //   filter(GRAY);
-  //   image(video, 150, 150); // draw a second copy to canvas
+  touchButtons()
 }
 
 function mousePressed() {
@@ -211,17 +208,30 @@ function cursorChange() {
     // let circleDiameter = width / 8
     // circle(mouseX, mouseY, circleDiameter)
     if (currentVideo === homeVid) {
-      fill(0)
-      noStroke()
-      textSize(fontSize)
-      text(names[currentHover], mouseX + 2, mouseY - 8)
-      fill(255)
-      noStroke()
-      textSize(fontSize)
-      text(names[currentHover], mouseX, mouseY - 10)
+      showName(names[currentHover], mouseX, mouseY)
     }
-
   }
+}
+
+function touchButtons() {
+  if (touch && !clickToStart) {
+    showName(names[0], vidWidth * button1X + fontSize * 0.1 + modX, vidHeight * button1Y + modY + fontSize * 0.2, 0.5)
+    showName(names[1], vidWidth * button2X + modX, vidHeight * button2Y + modY + fontSize * 0.2, 0.5)
+    showName(names[2], vidWidth * button3X + modX, vidHeight * button3Y + modY + fontSize * 0.25, 0.5)
+    showName(names[3], vidWidth * button4X + modX, vidHeight * button4Y + modY + fontSize * 0.25, 0.5)
+    showName(names[4], vidWidth * button5X + modX, vidHeight * button5Y + modY - fontSize * 0.45, 0.5)
+  }
+}
+
+function showName(name, x, y, scale = 1) {
+  fill(0)
+  noStroke()
+  textSize(fontSize * scale)
+  text(name, x + 2, y + fontSize / 3 + 2)
+  fill(255)
+  noStroke()
+  textSize(fontSize * scale)
+  text(name, x, y + fontSize / 3)
 }
 
 // hit detection for back button
