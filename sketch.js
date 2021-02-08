@@ -81,9 +81,9 @@ function setup() {
   robyn.elt.setAttribute("playsinline", "");
   thomas.elt.setAttribute("playsinline", "");
   // playMain();
-  videos = [videoRajah, videoCastro, videoAysen, videoThomas, videoRobyn, videoMain]
-  audio = [rajah, castro, aysen, thomas, robyn]
-  names = ["Rajah", "Castro", "Aysen", "Thomas", "Robyn"]
+  videos = [videoRajah, videoCastro, videoThomas, videoAysen, videoRobyn, videoMain]
+  audio = [rajah, castro, thomas, aysen, robyn]
+  names = ["Rajah", "Castro", "Thomas", "Aysen", "Robyn"]
   background(0);
   fontSize = width / 10
   rectMode(CENTER);
