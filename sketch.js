@@ -45,7 +45,7 @@ let vidFading = false;
 let fontSize;
 
 // variable for mobile/touch detection
-let touch = true
+let touch = false
 if ("ontouchstart" in document.documentElement) {
   touch = true;
 }
