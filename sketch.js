@@ -14,7 +14,7 @@ let button3Y = 0.70;
 let button4X = 0.63;
 let button4Y = 0.70;
 let button5X = 0.55;
-let button5Y = 0.13;
+let button5Y = 0.28;
 let buttonsOn = []
 
 let clickToStart = true;
@@ -45,7 +45,7 @@ let vidFading = false;
 let fontSize;
 
 // variable for mobile/touch detection
-let touch = false
+let touch = true
 if ("ontouchstart" in document.documentElement) {
   touch = true;
 }
@@ -68,6 +68,7 @@ function preload() {
 }
 
 function setup() {
+//   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
   // playsinline allows mobile to have the video on the canvas
   // otherwise it plays fullscreen in quicktime on ios
@@ -91,13 +92,6 @@ function setup() {
   textSize(fontSize);
   textStyle(BOLD);
   smooth();
-}
-
-function draw() {
-  // background(0)
-  clear();
-  cursorChange()
-  fill(colour)
 
   // calculate x and y offset for elements
   // calculate 'cover' size width and height
@@ -110,6 +104,13 @@ function draw() {
     vidHeight = height
     modX = width / 2 - vidWidth / 2;
   }
+}
+
+function draw() {
+  // background(0)
+  clear();
+  cursorChange()
+  fill(colour)
 
   // initial text
   if (clickToStart) {
@@ -145,6 +146,9 @@ function draw() {
   isMouseInside(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize, 4)
 
   touchButtons()
+  
+//   fill(0,255, 255)
+//   circle(width/2, height/2, 100)
 }
 
 function mousePressed() {
@@ -288,3 +292,5 @@ function playAudio(clip) {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
+if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', function() { location.reload(); }, false); }
