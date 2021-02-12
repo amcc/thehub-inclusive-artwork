@@ -97,10 +97,9 @@ function setup() {
   audio = [rajah, castro, thomas, aysen, robyn]
   names = ["Rajah", "Castro", "Thomas", "Aysen", "Robyn"]
   background(0);
-  fontSize = width / 10
+  
   rectMode(CENTER);
   textFont('Amatic SC')
-  textSize(fontSize);
   textStyle(BOLD);
   smooth();
 
@@ -151,28 +150,31 @@ function draw() {
     noStroke()
     // textSize(40);
     textAlign(CENTER);
+    fontSize = width > height ? height / 10 : width / 10;
+  textSize(fontSize);
     fill(255)
     let clickPadding = touch && width < height ? 50 : 0
-    touch ? text("click to start", width / 2, height / 2 - clickPadding) : text("click to start", width / 2, height / 3 - 50)
+    touch ? text("click to start", width / 2, height / 2 - clickPadding) : text("click to start", width / 2, height / 3.5 - 50)
 
     if (touch && width < height) {
       text("you may want to", width / 2, height / 2 + 80)
       text("rotate your phone", width / 2, height / 2 + 170)
     }
-    
-  textSize(fontSize/2);
-    if (!touch){ 
+
+    let thisTextSize = fontSize / 2
+    textSize(thisTextSize);
+    if (!touch) {
       //["Rajah", "Castro", "Thomas", "Aysen", "Robyn"]
-      text("You can use a keyboard to control videos:", width / 2, height / 3 + 50);
-      text("1 - Rajah", width / 2, height / 3 + 100);
-      text("2 - Castro", width / 2, height / 3+ 150);
-      text("3 - Thomas", width / 2, height / 3 + 200);
-      text("4 - Aysen", width / 2, height / 3 + 250);
-      text("5 - Robyn", width / 2, height / 3 + 300);
-      text("Any other key - go back", width / 2, height / 3 + 350);
+      text("You can use a keyboard to control videos:", width / 2, height / 3.5 + thisTextSize);
+      text("1 - Rajah", width / 2, height / 3.5 + thisTextSize * 2);
+      text("2 - Castro", width / 2, height / 3.5 + thisTextSize * 3);
+      text("3 - Thomas", width / 2, height / 3.5 + thisTextSize * 4);
+      text("4 - Aysen", width / 2, height / 3.5 + thisTextSize * 5);
+      text("5 - Robyn", width / 2, height / 3.5 + thisTextSize * 6);
+      text("Any other key - go back", width / 2, height / 3.5 + thisTextSize * 7);
     }
-    
-  textSize(fontSize);
+
+    textSize(fontSize);
   }
 
   // squares for button positions
@@ -318,8 +320,8 @@ function touchButtons() {
   if (touch && !clickToStart && currentVideo === homeVid) {
     showName(names[0], vidWidth * button1X + modX, vidHeight * button1Y + modY + fontSize * 0.2, 0.6)
     showName(names[1], vidWidth * button2X + modX, vidHeight * button2Y + modY + fontSize * 0.2, 0.6)
-    showName(names[2], vidWidth * (button3X-0.03) + modX, vidHeight * button3Y + modY + fontSize * 0.25, 0.6)
-    showName(names[3], vidWidth * (button4X+0.03) + modX, vidHeight * button4Y + modY + fontSize * 0.25, 0.6)
+    showName(names[2], vidWidth * (button3X - 0.03) + modX, vidHeight * button3Y + modY + fontSize * 0.25, 0.6)
+    showName(names[3], vidWidth * (button4X + 0.03) + modX, vidHeight * button4Y + modY + fontSize * 0.25, 0.6)
     showName(names[4], vidWidth * button5X + modX, vidHeight * (button5Y + 0.1) + modY - fontSize * 0.45, 0.6)
   }
 }
@@ -328,7 +330,7 @@ function showName(name, x, y, scale = 1) {
 
   let thisScale = width < height ? scale * 1.6 : scale
   let thisYAdd = width < height ? 20 : 0
-  
+
   console.log(thisScale)
 
   fill(0)
