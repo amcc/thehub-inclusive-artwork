@@ -1,3 +1,10 @@
+//diable pinch zoom
+document.addEventListener('touchmove', function(event) {
+  if (event.scale !== 1) {
+    event.preventDefault();
+  }
+}, false);
+
 // fraction sizes relative to width.
 let ratio = 16 / 9;
 
@@ -14,16 +21,18 @@ let button3Y = 0.70;
 let button4X = 0.63;
 let button4Y = 0.70;
 let button5X = 0.55;
-let button5Y = 0.28;
+let button5Y = 0.18;
 let buttonsOn = []
 
 let clickToStart = true;
-let enableButtons = true;
+let enableButtons = false;
 let buttonHover1 = false;
 let buttonHover2 = false;
 let buttonHover3 = false;
 let buttonHover4 = false;
 let buttonHovers = [buttonHover1, buttonHover2, buttonHover3, buttonHover4]
+
+let accessButtons = []
 
 // responsive sizing for 'cover' style positioning/sizing
 let modX = 0;
@@ -68,7 +77,7 @@ function preload() {
 }
 
 function setup() {
-//   pixelDensity(1);
+  //   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
   // playsinline allows mobile to have the video on the canvas
   // otherwise it plays fullscreen in quicktime on ios
@@ -77,10 +86,12 @@ function setup() {
   videoRajah.elt.setAttribute("playsinline", "");
   videoRobyn.elt.setAttribute("playsinline", "");
   videoThomas.elt.setAttribute("playsinline", "");
+  videoAysen.elt.setAttribute("playsinline", "");
   castro.elt.setAttribute("playsinline", "");
   rajah.elt.setAttribute("playsinline", "");
   robyn.elt.setAttribute("playsinline", "");
   thomas.elt.setAttribute("playsinline", "");
+  aysen.elt.setAttribute("playsinline", "");
   // playMain();
   videos = [videoRajah, videoCastro, videoThomas, videoAysen, videoRobyn, videoMain]
   audio = [rajah, castro, thomas, aysen, robyn]
@@ -93,23 +104,45 @@ function setup() {
   textStyle(BOLD);
   smooth();
 
+  // make buttons
+  makebuttons(0, 100, 100, button1X, button1Y)
+  makebuttons(1, 100, 100, button2X, button2Y)
+  makebuttons(2, 100, 100, button3X, button3Y)
+  makebuttons(3, 100, 100, button4X, button4Y)
+  makebuttons(4, 100, 100, button5X, button5Y)
+
+  // back button
+  let backbutton = createButton("go back");
+  backbutton.addClass('sr-only')
+  backbutton.id('back')
+  backbutton.attribute('aria-label', `go back`);
+  backbutton.size(100, 100)
+  backbutton.position(0, 500);
+  // button.mousePressed(() => buttonAction(id));
+  document.getElementById('back').addEventListener("click", () => playMain());
+
+  accessButtons.push(backbutton)
+}
+
+function draw() {
+  clear();
+  // cursorChange()
+
   // calculate x and y offset for elements
   // calculate 'cover' size width and height
   if (width / height < ratio) {
     vidWidth = width
     vidHeight = height * (width / height) / ratio
     modY = height / 2 - vidHeight / 2;
+    // modY = 0;
+    modX = 0;
   } else {
     vidWidth = width / ((width / height) / ratio)
     vidHeight = height
     modX = width / 2 - vidWidth / 2;
+    modY = 0;
   }
-}
 
-function draw() {
-  // background(0)
-  clear();
-  cursorChange()
   fill(colour)
 
   // initial text
@@ -119,57 +152,122 @@ function draw() {
     // textSize(40);
     textAlign(CENTER);
     fill(255)
-    text("click to start", width / 2, height / 2)
+    let clickPadding = touch && width < height ? 50 : 0
+    touch ? text("click to start", width / 2, height / 2 - clickPadding) : text("click to start", width / 2, height / 3 - 50)
+
+    if (touch && width < height) {
+      text("you may want to", width / 2, height / 2 + 80)
+      text("rotate your phone", width / 2, height / 2 + 170)
+    }
+    
+  textSize(fontSize/2);
+    if (!touch){ 
+      //["Rajah", "Castro", "Thomas", "Aysen", "Robyn"]
+      text("You can use a keyboard to control videos:", width / 2, height / 3 + 50);
+      text("1 - Rajah", width / 2, height / 3 + 100);
+      text("2 - Castro", width / 2, height / 3+ 150);
+      text("3 - Thomas", width / 2, height / 3 + 200);
+      text("4 - Aysen", width / 2, height / 3 + 250);
+      text("5 - Robyn", width / 2, height / 3 + 300);
+      text("Any other key - go back", width / 2, height / 3 + 350);
+    }
+    
+  textSize(fontSize);
   }
 
   // squares for button positions
   noFill()
+
+
   strokeWeight(4)
   stroke(255, 100)
   noStroke();
-  if (enableButtons && !clickToStart) {
-    square(vidWidth * button1X + modX, vidHeight * button1Y + modY, vidWidth * buttonSize);
-    square(vidWidth * button2X + modX, vidHeight * button2Y + modY, vidWidth * buttonSize);
-    square(vidWidth * button3X + modX, vidHeight * button3Y + modY, vidWidth * buttonSize);
-    square(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize);
-    square(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize);
-  } else if (!clickToStart) {
+
+  // position the accessible buttons
+
+  // set the button size
+  let accessButtonSize = vidWidth * buttonSize;
+  // move offscreen if not enbled
+  let offScreen = enableButtons ? 0 : 10000;
+  accessButtons.forEach(accessButton => {
+    accessButton.position(vidWidth * accessButton.xPos + modX - accessButtonSize / 2 + offScreen, vidHeight * accessButton.yPos + modY - accessButtonSize / 2);
+    accessButton.size(accessButtonSize, accessButtonSize)
+  })
+  if (!clickToStart) {
     noStroke()
     rect(vidWidth * backButtonX + modX, vidHeight * backButtonY + modY, width, height);
   }
 
-  // hit detection on rollover
-  isMouseInside(vidWidth * button1X + modX, vidHeight * button1Y + modY, vidWidth * buttonSize, 0)
-  isMouseInside(vidWidth * button2X + modX, vidHeight * button2Y + modY, vidWidth * buttonSize, 1)
-  isMouseInside(vidWidth * button3X + modX, vidHeight * button3Y + modY, vidWidth * buttonSize, 2)
-  isMouseInside(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize, 3)
-  isMouseInside(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize, 4)
-
   touchButtons()
-  
-//   fill(0,255, 255)
-//   circle(width/2, height/2, 100)
+
+  if (currentVideo === homeVid && !touch && currentHover !== null) {
+    showName(names[currentHover], mouseX, mouseY)
+  }
+
+  if (enableButtons) {
+    cursor(ARROW)
+  } else {
+    cursor(HAND)
+  }
 }
 
 function mousePressed() {
   // set the video to loop and start playing
 
   // hit detection on click/tap
-  if (enableButtons) {
-    isMouseInside(vidWidth * button1X + modX, vidHeight * button1Y + modY, vidWidth * buttonSize, 0, true)
-    isMouseInside(vidWidth * button2X + modX, vidHeight * button2Y + modY, vidWidth * buttonSize, 1, true)
-    isMouseInside(vidWidth * button3X + modX, vidHeight * button3Y + modY, vidWidth * buttonSize, 2, true)
-    isMouseInside(vidWidth * button4X + modX, vidHeight * button4Y + modY, vidWidth * buttonSize, 3, true)
-    isMouseInside(vidWidth * button5X + modX, vidHeight * button5Y + modY, vidWidth * buttonSize, 4, true)
-  } else {
-    backButton(vidWidth * backButtonX + modX, vidHeight * backButtonY + modY, width, height)
+  if (!enableButtons) {
+    setTimeout(function() {
+      backButton(vidWidth * backButtonX + modX, vidHeight * backButtonY + modY, width, height);
+    }, 400);
+
   }
   if (clickToStart) {
-    playMain()
+    // make sure the playMain happens after button click
+    setTimeout(function() {
+      playMain();
+    }, 400);
     clickToStart = false;
   }
 }
 
+function makebuttons(id, xSize, ySize, xPos, yPos) {
+  let button = createButton(names[id]);
+  // button.addClass('sr-only')
+  button.id(id)
+  button.attribute('aria-label', `play ${names[id]} video`);
+  button.size(xSize, ySize)
+  button.position(xPos, yPos);
+  button.xPos = xPos;
+  button.yPos = yPos;
+  // button.mousePressed(() => buttonAction(id));
+  document.getElementById(id).addEventListener("click", () => buttonClick(id));
+  document.getElementById(id).addEventListener("mouseenter", () => buttonsEnter(id));
+  document.getElementById(id).addEventListener("mouseleave", () => buttonsLeave(id));
+
+  accessButtons.push(button)
+}
+
+
+
+function buttonClick(clip) {
+  console.log('click', clickToStart, enableButtons)
+  if (!clickToStart && enableButtons) {
+    playNewVideo(currentVideo, clip)
+    enableButtons = false;
+
+    if (touch) playAudio(clip);
+  }
+}
+
+function buttonsEnter(clip) {
+  if (!clickToStart && enableButtons) {
+    playAudio(clip);
+  }
+}
+
+function buttonsLeave(clip) {
+  currentHover = null;
+}
 // hit detection for audio and video clips
 function isMouseInside(x, y, size, clip, click = false) {
   if (enableButtons && !clickToStart) {
@@ -184,7 +282,7 @@ function isMouseInside(x, y, size, clip, click = false) {
 
       }
       if (click) {
-        playNewVideo(videos[clip], videos[currentVideo], clip)
+        playNewVideo(currentVideo, clip)
       }
       buttonHovers[clip] = true
     } else {
@@ -193,9 +291,6 @@ function isMouseInside(x, y, size, clip, click = false) {
       buttonsOn[clip] = false;
       // return false;
     }
-
-    // console.log('touch', touch)
-    // console.log('click', click)
   } else {
 
   }
@@ -219,24 +314,32 @@ function cursorChange() {
 }
 
 function touchButtons() {
+  //["Rajah", "Castro", "Thomas", "Aysen", "Robyn"]
   if (touch && !clickToStart && currentVideo === homeVid) {
-    showName(names[0], vidWidth * button1X + fontSize * 0.1 + modX, vidHeight * button1Y + modY + fontSize * 0.2, 0.5)
-    showName(names[1], vidWidth * button2X + modX, vidHeight * button2Y + modY + fontSize * 0.2, 0.5)
-    showName(names[2], vidWidth * button3X + modX, vidHeight * button3Y + modY + fontSize * 0.25, 0.5)
-    showName(names[3], vidWidth * button4X + modX, vidHeight * button4Y + modY + fontSize * 0.25, 0.5)
-    showName(names[4], vidWidth * button5X + modX, vidHeight * button5Y + modY - fontSize * 0.45, 0.5)
+    showName(names[0], vidWidth * button1X + modX, vidHeight * button1Y + modY + fontSize * 0.2, 0.6)
+    showName(names[1], vidWidth * button2X + modX, vidHeight * button2Y + modY + fontSize * 0.2, 0.6)
+    showName(names[2], vidWidth * (button3X-0.03) + modX, vidHeight * button3Y + modY + fontSize * 0.25, 0.6)
+    showName(names[3], vidWidth * (button4X+0.03) + modX, vidHeight * button4Y + modY + fontSize * 0.25, 0.6)
+    showName(names[4], vidWidth * button5X + modX, vidHeight * (button5Y + 0.1) + modY - fontSize * 0.45, 0.6)
   }
 }
 
 function showName(name, x, y, scale = 1) {
+
+  let thisScale = width < height ? scale * 1.6 : scale
+  let thisYAdd = width < height ? 20 : 0
+  
+  console.log(thisScale)
+
   fill(0)
   noStroke()
-  textSize(fontSize * scale)
-  text(name, x + 2, y + fontSize / 3 + 2)
+  textSize(fontSize * thisScale)
+  textAlign(CENTER)
+  text(name, x + 2, y + fontSize / 3 + 2 + thisYAdd)
   fill(255)
   noStroke()
-  textSize(fontSize * scale)
-  text(name, x, y + fontSize / 3)
+  textSize(fontSize * thisScale)
+  text(name, x, y + fontSize / 3 + thisYAdd)
 }
 
 // hit detection for back button
@@ -244,14 +347,14 @@ function backButton(x, y, width, height) {
   if (!enableButtons && !clickToStart) {
     if (mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height) {
       enableButtons = false;
-      console.log('click')
-      playMain(videos[currentVideo])
+      playMain()
     }
   }
 }
 
 // play the home page video and clean up
-function playMain(oldVideo) {
+function playMain() {
+  console.log('playmain')
   vidFade = 0;
   vidFading = true;
   enableButtons = true;
@@ -267,30 +370,62 @@ function playMain(oldVideo) {
 
 }
 
-function playNewVideo(newVideo, oldVideo, clip) {
+function playNewVideo(oldClip, newClip) {
   enableButtons = false
   vidFade = 0;
-  vidFading = true;
-  newVideo.removeClass("out")
-  newVideo.addClass("in")
-  newVideo.stop()
-  newVideo.play()
-  oldVideo.pause();
-  currentVideo = clip;
-  newVideo.onended(playMain);
+  videos.map(clip => {
+    clip.addClass("out")
+    clip.removeClass("in")
+  })
+  videos[newClip].removeClass("out")
+  videos[newClip].addClass("in")
+  videos[newClip].stop()
+  videos[newClip].play()
+  if (newClip !== oldClip) videos[oldClip].stop();
+  currentVideo = newClip;
+  videos[newClip].onended(playMain);
   vidFading = true;
 }
 
 // play audio clip and stop others
 function playAudio(clip) {
+  showName(names[clip], mouseX, mouseY)
+  currentHover = clip;
   audio.map(clip => {
     clip.pause()
   })
   audio[clip].play()
 }
 
+function keyPressed() {
+  if (clickToStart) {
+    playMain()
+    clickToStart = false;
+  }
+  //names = ["Rajah", "Castro", "Thomas", "Aysen", "Robyn"]
+  if (key == '1') {
+    playNewVideo(currentVideo, 0);
+  } else if (key == '2') {
+    playNewVideo(currentVideo, 1);
+  } else if (key == '3') {
+    playNewVideo(currentVideo, 2);
+  } else if (key == '4') {
+    playNewVideo(currentVideo, 3);
+  } else if (key == '5') {
+    playNewVide1o(currentVideo, 4);
+  } else {
+    playMain()
+  }
+
+}
+
+
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', function() { location.reload(); }, false); }
+if (window.DeviceOrientationEvent) {
+  window.addEventListener('orientationchange', function() {
+    location.reload();
+  }, false);
+}
